@@ -64,28 +64,25 @@ Some custom types can be found in multiple parameters:
   </tbody>
 </table>
 
-Authentication
---------------
+### Arrays
 
-For the first request (when you have no cookie, nor `SessionId`), you
-have to append these parameters to the request body:
+Some requests returns array-like structures. This is done with a `Total`
+response parameter, and multiple parameters ending with an integer
+representing the offset.
 
-| Name         | Description           |
-| ------------ | --------------------- |
-| `noPersonne` | client ID             |
-| `motDePasse` | client plain password |
+Example:
 
-If the authentication fails, you'll get an `CM0001` error code. See
-[Errors](#errors) for more informations.
+    Total: 2
+    Foo1: value
+    Bar1: value
+    Foo2: value
+    Bar2: value
 
-Session
--------
+I'll write these parameters ending with the `[x]` sequence, meant to be
+replaced with a number, from 0 to `Total`:
 
-The client must support HTTP cookies.
-
-By sniffing the original application, you can see a `SessionId` in all
-requests and responses after the authentication, but the session will be
-destroyed if not using HTTP cookies.
+    Foo[x]
+    Bar[x]
 
 Common Request Parameters
 -------------------------
@@ -157,6 +154,30 @@ Common Response Parameters
 | `Action` | string         | probably the client action to trigger |
 | `Eof`    | string boolean |                                       |
 
+
+Authentication
+--------------
+
+For the first request (when you have no cookie, nor `SessionId`), you
+have to append these parameters to the request body:
+
+| Name         | Description           |
+| ------------ | --------------------- |
+| `noPersonne` | client ID             |
+| `motDePasse` | client plain password |
+
+If the authentication fails, you'll get an `CM0001` error code. See
+[Errors](#errors).
+
+Session
+-------
+
+The client must support HTTP cookies.
+
+By sniffing the original application, you can see a `SessionId` in all
+requests and responses after the authentication, but the session will be
+destroyed if not using HTTP cookies.
+
 Errors
 ------
 
@@ -171,27 +192,6 @@ and the error message.
 | `C01`    | service temporarily unavailable                  |
 | `CM0001` | wrong credentials                                |
 | `AT0008` | session expired, the login step must be replayed |
-
-Arrays
-------
-
-Some requests returns array-like structures. This is done with a `Total`
-response parameter, and multiple parameters ending with an integer
-representing the offset.
-
-Example:
-
-    Total: 2
-    Foo1: value
-    Bar1: value
-    Foo2: value
-    Bar2: value
-
-I'll write these parameters ending with the `[x]` sequence, meant to be
-replaced with a number, from 0 to `Total`:
-
-    Foo[x]
-    Bar[x]
 
 Requests
 --------
