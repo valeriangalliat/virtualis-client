@@ -73,7 +73,7 @@ Common Request Parameters
       <td><code>Locale</code></td>
       <td>string</td>
       <td>
-        client locale, two letter country code (like <code>fr</code>,
+        client locale, two letter country code (like <code>fr</code>),
         required for some requests like <code>GetCPN</code>
       </td>
       <td></td>
@@ -96,7 +96,10 @@ Common Request Parameters
     <tr>
       <td><code>startTime</code></td>
       <td>integer</td>
-      <td>maybe the time since last request... `0` seems to be valid</td>
+      <td>
+        maybe the time since last request... <code>0</code> seems to be
+        valid
+      </td>
       <td></td>
     </tr>
   </tbody>
