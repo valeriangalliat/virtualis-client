@@ -4,31 +4,32 @@ Virtualis API
 Format
 ------
 
-All the API calls are made with HTTPS protocol, using the `POST` HTTP method
-with path `/cvd/WebServlet`, on `www.service-virtualis.com` host.
+All the API calls are made on <https://service-virtualis.com/cvd/WebServlet>
+using the `POST` HTTP method.
 
-All `POST` HTTP requests are in `application/x-www-form-urlencoded` content
-type, and the response body is in the same format.
+All requests are made with `application/x-www-form-urlencoded` content type.
 
-The request data must be encoded in ISO-8859-1, and the returned data
+The request data must be encoded in ISO 8859-1, and the returned data
 is in the same encoding.
 
-Do not trust the `Content-Type` header at all. They always set it to
+Do not trust the `Content-Type` response header at all. They always set it to
 `text/html; charset=UTF-8` even if they're actually sending
 `application/x-www-form-urlencoded; charset=ISO-8859-1`.
 
 All urlencoded responses can contain a trailing `&`, or multiple `&` (empty
-parameter). In a strict parsing, you should remove them first.
+parameters). In a strict parsing, you should remove them first.
 
-All urlencoded cannot contain any array parameter, you can assume each
-parameter is unique.
+The responses won't contain any array parameter (like `foo[]=bar`), and
+you can safely assume each parameter is unique.
 
 Session
 -------
 
-The client must support HTTP cookies. A `SessionId` is also given in HTTP
-responses, but if you pass it again in the request body, it is ignored
-(even if the original application always passes it both ways).
+The client must support HTTP cookies.
+
+By sniffing the original application, you can see a `SessionId` in all
+requests and responses after the authentication, but the session will be
+destroyed if not using HTTP cookies.
 
 Authentication
 --------------
@@ -116,9 +117,9 @@ Common Response Parameters
 Errors
 ------
 
-When an error occurs, the response `Action` parameter is set to `Error`,
-with `Code` and `ErrMsg` parameters, representing respectively the error
-code and the error message.
+When an error occurs, the `Action` parameter is set to `Error`, and you get
+`Code` and `ErrMsg` parameters, representing respectively the error code
+and the error message.
 
 ### Known Codes
 
@@ -131,8 +132,9 @@ code and the error message.
 Arrays
 ------
 
-Some requests returns arrays. This is done with a `Total` response parameter,
-and multiple parameters ending with an integer representing the offset.
+Some requests returns array-like structures. This is done with a `Total`
+response parameter, and multiple parameters ending with an integer
+representing the offset.
 
 Example:
 
@@ -143,13 +145,15 @@ Example:
     Bar2: value
 
 I'll write these parameters ending with the `[x]` sequence, meant to be
-replaced with a number, from 0 to `Total` range.
+replaced with a number, from 0 to `Total`:
+
+    Foo[x]
+    Bar[x]
 
 Types
 -----
 
-Some data types string formats are common in multiple parameters and are
-described here.
+Some custom types can be found in multiple parameters:
 
 <table>
   <thead>
@@ -195,39 +199,39 @@ Requests
 
 #### Request
 
-| Name      | Type    | Description | Value            |
-| --------- | ------- | ----------- | ---------------- |
-| `Request` |         |             | `GetActiveCards` |
-| `CardType`| unknown |             |                  |
-| `VCardId` | unknown |             |                  |
-| `codeEFS` |         |             | `21`             |
-| `codeSi`  |         |             | `001`            |
+| Name      | Type    | Value            |
+| --------- | ------- | ---------------- |
+| `Request` |         | `GetActiveCards` |
+| `CardType`|         |                  |
+| `VCardId` |         |                  |
+| `codeEFS` |         | `21`             |
+| `codeSi`  |         | `001`            |
 
 #### Response
 
-| Name                | Type           |
-| ------------------- | -------------- |
-| `Total`             | integer        |
-| `AdFrequency[x]`    | integer        |
-| `CPN_Service[x]`    | boolean        |
-| `CardType[x]`       | integer        |
-| `VCardId[x]`        | integer        |
-| `CardholderName[x]` | string         |
-| `DefaultCard[x]`    | yes/no         |
-| `Nickname[x]`       | string         |
-| `PAN[x]`            | integer        |
-| `VBV_Service[x]`    | string boolean |
+| Name                | Type           | Description |
+| ------------------- | -------------- | ----------- |
+| `Total`             | integer        |             |
+| `AdFrequency[x]`    | integer        |             |
+| `CPN_Service[x]`    | boolean        |             |
+| `CardType[x]`       | integer        |             |
+| `VCardId[x]`        | integer        |             |
+| `CardholderName[x]` | string         | holder name |
+| `DefaultCard[x]`    | yes/no         |             |
+| `Nickname[x]`       | string         | card name   |
+| `PAN[x]`            | integer        | card number |
+| `VBV_Service[x]`    | string boolean |             |
 
 ### Profiles List
 
 #### Request
 
-| Name          | Type    | Value                  |
-| ------------- | ------- | ---------------------- |
-| `Request`     |         | `ListProfileIds`       |
-| `ProfileType` |         |                        |
-| `CardType`    |         | previous `CardType[x]` |
-| `VCardId`     |         | previous `VCardId[x]`  |
+| Name          | Value                  |
+| ------------- | ---------------------- |
+| `Request`     | `ListProfileIds`       |
+| `ProfileType` |                        |
+| `CardType`    | previous `CardType[x]` |
+| `VCardId`     | previous `VCardId[x]`  |
 
 #### Response
 
@@ -241,12 +245,12 @@ Requests
 
 #### Request
 
-| Name          | Type   | Value                     |
-| ------------- | ------ | ------------------------- |
-| `Request`     | string | `GetShippingProfile`      |
-| `ProfileName` |        | previous `ProfileName[x]` |
-| `CardType`    |        | previous `CardType[x]`    |
-| `VCardId`     |        | previous `VCardId[x]`     |
+| Name          | Value                     |
+| ------------- | ------------------------- |
+| `Request`     | `GetShippingProfile`      |
+| `ProfileName` | previous `ProfileName[x]` |
+| `CardType`    | previous `CardType[x]`    |
+| `VCardId`     | previous `VCardId[x]`     |
 
 #### Response
 
@@ -309,7 +313,7 @@ Requests
     <tr>
       <td><code>CumulativeLimit</code></td>
       <td>integer</td>
-      <td>maximum amount to credit</td>
+      <td>ceiling</td>
       <td></td>
     </tr>
     <tr>
@@ -341,14 +345,14 @@ Requests
 
 #### Response
 
-| Name          | Type       | Description     |
-| ------------- | ---------- | --------------- |
-| `AVV`         | integer    | secret code     |
-| `Expiry`      | short date | expiration date |
-| `ExpiryMonth` | integer    |                 |
-| `ExpiryYear`  | integer    |                 |
-| `From`        | short date |                 |
-| `PAN`         | integer    | card number     |
+| Name          | Type       | Description  |
+| ------------- | ---------- | ------------ |
+| `AVV`         | integer    | secret code  |
+| `Expiry`      | short date | expiry date  |
+| `ExpiryMonth` | integer    | expiry month |
+| `ExpiryYear`  | integer    | expiry year  |
+| `From`        | short date |              |
+| `PAN`         | integer    | card number  |
 
 ### Buyings
 
@@ -373,9 +377,9 @@ Requests
 | `AVV1`                 | integer    | secret code                       |
 | `AuthCode[x]`          |            |                                   |
 | `CPNType[x]`           |            |                                   |
-| `CumulativeLimit[x]`   | money      | maximum debit                     |
+| `CumulativeLimit[x]`   | money      | ceiling                           |
 | `Currency[x]`          | integer    |                                   |
-| `ExpiryDate[x]`        | short date | expiration date                   |
+| `ExpiryDate[x]`        | short date | expiry date                       |
 | `IssueDate[x]`         | date       |                                   |
 | `MerchantCity[x]`      |            |                                   |
 | `MerchantCountry[x]`   |            |                                   |
@@ -413,13 +417,13 @@ Requests
 | `Start`               | integer    |                                   |
 | `Total`               | integer    |                                   |
 | `AVV1`                | integer    | secret code                       |
-| `AuthAmount[x]`       | money      | maximum debit                     |
+| `AuthAmount[x]`       | money      | ceiling                           |
 | `CPNType[x]`          |            |                                   |
-| `CumulativeLimit[x]`  | money      | maximum debit                     |
-| `UCumulativeLimit[x]` | float      | maximum debit                     |
+| `CumulativeLimit[x]`  | money      | ceiling                           |
+| `UCumulativeLimit[x]` | float      | ceiling                           |
 | `Currency[x]`         | integer    |                                   |
-| `Expiry[x]`           | short date | expiration date                   |
-| `StartDate[x]`        | short date | created date                      |
+| `Expiry[x]`           | short date | expiry date                       |
+| `StartDate[x]`        | short date | creation date                     |
 | `IssueDate[x]`        | date       |                                   |
 | `MerchantId[x]`       | integer    |                                   |
 | `MerchantName[x]`     |            |                                   |
