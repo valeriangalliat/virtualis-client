@@ -303,7 +303,7 @@ Requests
       <td><code>Request</code></td>
       <td></td>
       <td></td>
-      <td>GetCPN</td>
+      <td><code>GetCPN</code></td>
     </tr>
     <tr>
       <td><code>TransLimit</code></td>
