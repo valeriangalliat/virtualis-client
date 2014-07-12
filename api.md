@@ -236,11 +236,11 @@ Requests
 
 #### Response
 
-| Name            | Type    |
-| --------------- | ------- |
-| `Total`         | integer |
-| `ProfileName[x] |         |
-| `ProfileType[x] |         |
+| Name             | Type    |
+| ---------------- | ------- |
+| `Total`          | integer |
+| `ProfileName[x]` |         |
+| `ProfileType[x]` |         |
 
 ### Shipping Profile
 
