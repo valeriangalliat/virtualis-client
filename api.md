@@ -22,14 +22,47 @@ parameters). In a strict parsing, you should remove them first.
 The responses won't contain any array parameter (like `foo[]=bar`), and
 you can safely assume each parameter is unique.
 
-Session
--------
+Types
+-----
 
-The client must support HTTP cookies.
+Some custom types can be found in multiple parameters:
 
-By sniffing the original application, you can see a `SessionId` in all
-requests and responses after the authentication, but the session will be
-destroyed if not using HTTP cookies.
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>yes/no</code></td>
+      <td><code>Y</code> or <code>N</code></td>
+    </tr>
+    <tr>
+      <td><code>date</code></td>
+      <td>
+        <code>day/month/year</code>, 2 digits for day and month,
+        4 for year
+      </td>
+    </tr>
+    <tr>
+      <td><code>short date</code></td>
+      <td>2 digits for month and year</td>
+    </tr>
+    <tr>
+      <td><code>money</code></td>
+      <td>
+        the first character is an URL encoded money symbol (like
+        <code>%80</code> for <code>€</code>), followed by a float number
+        with <code>.</code> as decimal separator
+      </td>
+    </tr>
+    <tr>
+      <td>string boolean</td>
+      <td>whether the string is <code>true</code> or <code>false</code></td>
+  </tbody>
+</table>
 
 Authentication
 --------------
@@ -44,6 +77,15 @@ have to append these parameters to the request body:
 
 If the authentication fails, you'll get an `CM0001` error code. See
 [Errors](#errors) for more informations.
+
+Session
+-------
+
+The client must support HTTP cookies.
+
+By sniffing the original application, you can see a `SessionId` in all
+requests and responses after the authentication, but the session will be
+destroyed if not using HTTP cookies.
 
 Common Request Parameters
 -------------------------
@@ -150,48 +192,6 @@ replaced with a number, from 0 to `Total`:
 
     Foo[x]
     Bar[x]
-
-Types
------
-
-Some custom types can be found in multiple parameters:
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>yes/no</code></td>
-      <td><code>Y</code> or <code>N</code></td>
-    </tr>
-    <tr>
-      <td><code>date</code></td>
-      <td>
-        <code>day/month/year</code>, 2 digits for day and month,
-        4 for year
-      </td>
-    </tr>
-    <tr>
-      <td><code>short date</code></td>
-      <td>2 digits for month and year</td>
-    </tr>
-    <tr>
-      <td><code>money</code></td>
-      <td>
-        the first character is an URL encoded money symbol (like
-        <code>%80</code> for <code>€</code>), followed by a float number
-        with <code>.</code> as decimal separator
-      </td>
-    </tr>
-    <tr>
-      <td>string boolean</td>
-      <td>whether the string is <code>true</code> or <code>false</code></td>
-  </tbody>
-</table>
 
 Requests
 --------
