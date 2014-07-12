@@ -90,7 +90,8 @@ Common Request Parameters
       <td>string boolean</td>
       <td>
         probably whether the client is Microsoft Internet Explorer, you
-        can set it to `true` if you want to troll their browser statistics
+        can set it to <code>true</code> if you want to troll their browser
+        statistics
       </td>
       <td></td>
     </tr>
