@@ -200,13 +200,13 @@ Requests
 
 #### Request
 
-| Name      | Type    | Value            |
-| --------- | ------- | ---------------- |
-| `Request` |         | `GetActiveCards` |
-| `CardType`|         |                  |
-| `VCardId` |         |                  |
-| `codeEFS` |         | `21`             |
-| `codeSi`  |         | `001`            |
+| Name      | Value            |
+| --------- | ---------------- |
+| `Request` | `GetActiveCards` |
+| `CardType`|                  |
+| `VCardId` |                  |
+| `codeEFS` | `21`             |
+| `codeSi`  | `001`            |
 
 #### Response
 
