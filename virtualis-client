@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+
+'''Virtualis Client.
+
+Usage: virtualis-client [options] <user>
+
+Options:
+  -h, --help         Show this screen.
+  --version          Show version.
+  -u, --user=<user>  User ID.
+  -p, --pass=<pass>  User password (prompt if not provided).
+  --cafile=<cafile>  Certificate file to use.
+  --capath=<capath>  Certificates directory [default: /etc/ssl/certs].
+'''
+
+import cmd
+import virtualis
+
+from docopt import docopt
+from getpass import getpass
+
+
+class VirtualisShell(cmd.Cmd):
+    intro = 'Virtualis shell. Type help or ? to list commands.\n'
+    prompt = '(virtualis) '
+
+    def __init__(self, client, completekey='tab', stdin=None, stdout=None):
+        super().__init__(completekey, stdin, stdout)
+        self.client = client
+
+    def do_exit(self, arg):
+        '''Exit the shell.'''
+        return True
+
+    def do_cards(self, arg):
+        '''List available cards.'''
+
+        if not hasattr(self, 'cards'):
+            request = virtualis.GetActiveCardsRequest()
+            self.cards = self.client.send(request).cards
+
+        self.show_cards()
+
+    def do_info(self, arg):
+        i = int(arg)
+        type = self.cards[i].type
+        id = self.cards[i].id
+
+        request = virtualis.GetCardInfoRequest(type, id)
+        info = self.client.send(request)
+
+        print()
+        print('AVV:', info.avv)
+        print('Expiry:', '/'.join(map(str, info.expiry)))
+        print('PAN:', info.pan)
+
+    def show_cards(self):
+        if len(self.cards) == 0:
+            print('*** No cards for your account.')
+            return
+
+        print()
+
+        self.show_card(0, self.cards[0])
+
+        for i, card in enumerate(self.cards[1:]):
+            print()
+            print('---')
+            print()
+
+            self.show_card(i, card)
+
+        print()
+
+    def show_card(self, i, card):
+        print('No.:', i)
+        print('Nick:', card.nick)
+        print('Holder:', card.holder_name)
+
+
+def main():
+    args = docopt(__doc__, version='Virtualis Client 0.1')
+
+    user = args['<user>']
+    pass_ = args['--pass']
+    cafile = args['--cafile']
+    capath = args['--capath']
+
+    if pass_ is None:
+        pass_ = getpass()
+
+    client = virtualis.Client(user, pass_, cafile, capath)
+
+    VirtualisShell(client).cmdloop()
+
+
+if __name__ == '__main__':
+    main()
