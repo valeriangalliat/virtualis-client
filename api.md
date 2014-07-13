@@ -196,7 +196,7 @@ and the error message.
 Requests
 --------
 
-### Authentication & Active Cards
+### Active Cards
 
 #### Request
 
