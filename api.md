@@ -406,7 +406,7 @@ card identified by `CardType` and `VCardID`.
 | `From`        | short date |              |
 | `PAN`         | integer    | card number  |
 
-### Delete Virtual Card
+### Delete Card
 
 Delete a virtual card identified by `CPNPAN`, owned by a real card
 identified by `CardType` and `VCardID`.
