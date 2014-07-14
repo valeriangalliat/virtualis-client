@@ -67,8 +67,8 @@ Some custom types can be found in multiple parameters:
 ### Arrays
 
 Some requests returns array-like structures. This is done with a `Total`
-response parameter, and multiple parameters ending with an integer
-representing the offset.
+(or `RecordCount`, I need to figure this out) response parameter, and
+multiple parameters ending with an integer representing the offset.
 
 Example:
 
@@ -178,6 +178,27 @@ By sniffing the original application, you can see a `SessionId` in all
 requests and responses after the authentication, but the session will be
 destroyed if not using HTTP cookies.
 
+Pagination
+----------
+
+Some requests support pagination. This is done with additional parameters
+in the request and the response:
+
+### Request
+
+| Name    | Type    | Description                                 |
+| ------- | ------- | ------------------------------------------- |
+| `Start` | integer | start offset (0 for the first page)         |
+| `Next`  | integer | no idea... probably next page record number |
+
+### Response
+
+| Name          | Type    | Description                       |
+| ------------- | ------- | --------------------------------- |
+| `RecordCount` | integer | number of records in current set  |
+| `Start`       | integer | same as `Start` request parameter |
+| `Total`       | integer | total number of records           |
+
 Errors
 ------
 
@@ -197,6 +218,8 @@ Requests
 --------
 
 ### Active Cards
+
+Get the list of active real cards for this account.
 
 #### Request
 
@@ -223,67 +246,57 @@ Requests
 | `PAN[x]`            | integer        | card number |
 | `VBV_Service[x]`    | string boolean |             |
 
-### Profiles List
+### Active Virtual Cards
+
+Get the list of active virtual cards behind real card (identified by
+`CardType` and `VCardID`.
 
 #### Request
 
-| Name          | Value                  |
-| ------------- | ---------------------- |
-| `Request`     | `ListProfileIds`       |
-| `ProfileType` |                        |
-| `CardType`    | previous `CardType[x]` |
-| `VCardId`     | previous `VCardId[x]`  |
+| Name       | Type    | Value                  |
+| ---------- | --------| ---------------------- |
+| `Request`  |         |`GetActiveAccounts`     |
+| `Start`    | integer | `0` by default         |
+| `Next`     | integer | `20` by default        |
+| `CardType` |         | previous `CardType[x]` |
+| `VCardId`  |         | previous `VCardId[x]`  |
 
 #### Response
 
-| Name             | Type    |
-| ---------------- | ------- |
-| `Total`          | integer |
-| `ProfileName[x]` |         |
-| `ProfileType[x]` |         |
+| Name                  | Type       | Description                       |
+| --------------------- | ---------- | --------------------------------- |
+| `End`                 | integer    |                                   |
+| `RecordCount`         | integer    |                                   |
+| `Start`               | integer    |                                   |
+| `Total`               | integer    |                                   |
+| `AVV1`                | integer    | secret code                       |
+| `AuthAmount[x]`       | money      | ceiling                           |
+| `CPNType[x]`          |            |                                   |
+| `CumulativeLimit[x]`  | money      | ceiling                           |
+| `UCumulativeLimit[x]` | float      | ceiling                           |
+| `Currency[x]`         | integer    |                                   |
+| `Expiry[x]`           | short date | expiry date                       |
+| `StartDate[x]`        | short date | creation date                     |
+| `IssueDate[x]`        | date       |                                   |
+| `MerchantId[x]`       | integer    |                                   |
+| `MerchantName[x]`     |            |                                   |
+| `MicroRefNumber[x]`   |            |                                   |
+| `NumUsage[x]`         | integer    | number of times the card was used |
+| `OpenToBuy[x]`        | money      |                                   |
+| `UOpenToBuy[x]`       | float      |                                   |
+| `PAN[x]`              | integer    | card number                       |
+| `ValidFrom[x]`        | date       |                                   |
 
-### Shipping Profile
+### Delete Card
 
 #### Request
 
-| Name          | Value                     |
-| ------------- | ------------------------- |
-| `Request`     | `GetShippingProfile`      |
-| `ProfileName` | previous `ProfileName[x]` |
-| `CardType`    | previous `CardType[x]`    |
-| `VCardId`     | previous `VCardId[x]`     |
-
-#### Response
-
-| Name               |
-| ------------------ |
-| `AdditionalField1` |
-| `AdditionalField2` |
-| `AdditionalField3` |
-| `AdditionalField4` |
-| `AdditionalField5` |
-| `AdditionalField6` |
-| `AdditionalField7` |
-| `Address1`         |
-| `Address2`         |
-| `Address3`         |
-| `Building`         |
-| `City`             |
-| `Country`          |
-| `EmailAddress`     |
-| `FirstName`        |
-| `LastName`         |
-| `MiddleName`       |
-| `PhoneNumber1`     |
-| `PhoneNumber2`     |
-| `PhoneNumber3`     |
-| `Postcode`         |
-| `PrefixName`       |
-| `ProfileName`      |
-| `ProfileType`      |
-| `StateProvince`    |
-| `Status`           |
-| `SuffixName`       |
+| Name       | Value                  |
+| ---------- | ---------------------- |
+| `CPNPAN`   | previous `PAN[x]`      |
+| `CardType` | previous `CardType[x]` |
+| `VCardId`  | previous `VCardId[x]`  |
+| `Request`  | `CancelCPN`            |
 
 ### Create Virtual Card
 
@@ -355,6 +368,70 @@ Requests
 | `From`        | short date |              |
 | `PAN`         | integer    | card number  |
 
+
+
+### Profiles List
+
+#### Request
+
+| Name          | Value                  |
+| ------------- | ---------------------- |
+| `Request`     | `ListProfileIds`       |
+| `ProfileType` |                        |
+| `CardType`    | previous `CardType[x]` |
+| `VCardId`     | previous `VCardId[x]`  |
+
+#### Response
+
+| Name             | Type    |
+| ---------------- | ------- |
+| `Total`          | integer |
+| `ProfileName[x]` |         |
+| `ProfileType[x]` |         |
+
+### Shipping Profile
+
+#### Request
+
+| Name          | Value                     |
+| ------------- | ------------------------- |
+| `Request`     | `GetShippingProfile`      |
+| `ProfileName` | previous `ProfileName[x]` |
+| `CardType`    | previous `CardType[x]`    |
+| `VCardId`     | previous `VCardId[x]`     |
+
+#### Response
+
+| Name               |
+| ------------------ |
+| `AdditionalField1` |
+| `AdditionalField2` |
+| `AdditionalField3` |
+| `AdditionalField4` |
+| `AdditionalField5` |
+| `AdditionalField6` |
+| `AdditionalField7` |
+| `Address1`         |
+| `Address2`         |
+| `Address3`         |
+| `Building`         |
+| `City`             |
+| `Country`          |
+| `EmailAddress`     |
+| `FirstName`        |
+| `LastName`         |
+| `MiddleName`       |
+| `PhoneNumber1`     |
+| `PhoneNumber2`     |
+| `PhoneNumber3`     |
+| `Postcode`         |
+| `PrefixName`       |
+| `ProfileName`      |
+| `ProfileType`      |
+| `StateProvince`    |
+| `Status`           |
+| `SuffixName`       |
+
 ### Buyings
 
 #### Request
@@ -396,52 +473,3 @@ Requests
 | `UTransactionLimit[x]` | float      | transaction limit                 |
 | `ValidFrom[x]`         | date       |                                   |
 | `ValidTo[x]`           | date       |                                   |
-
-### Active Cards
-
-#### Request
-
-| Name       | Type    | Value                  |
-| ---------- | --------| ---------------------- |
-| `Request`  |         |`GetActiveAccounts`     |
-| `Start`    | integer | `0` by default         |
-| `Next`     | integer | `20` by default        |
-| `CardType` |         | previous `CardType[x]` |
-| `VCardId`  |         | previous `VCardId[x]`  |
-
-#### Response
-
-| Name                  | Type       | Description                       |
-| --------------------- | ---------- | --------------------------------- |
-| `End`                 | integer    |                                   |
-| `RecordCount`         | integer    | number of records                 |
-| `Start`               | integer    |                                   |
-| `Total`               | integer    |                                   |
-| `AVV1`                | integer    | secret code                       |
-| `AuthAmount[x]`       | money      | ceiling                           |
-| `CPNType[x]`          |            |                                   |
-| `CumulativeLimit[x]`  | money      | ceiling                           |
-| `UCumulativeLimit[x]` | float      | ceiling                           |
-| `Currency[x]`         | integer    |                                   |
-| `Expiry[x]`           | short date | expiry date                       |
-| `StartDate[x]`        | short date | creation date                     |
-| `IssueDate[x]`        | date       |                                   |
-| `MerchantId[x]`       | integer    |                                   |
-| `MerchantName[x]`     |            |                                   |
-| `MicroRefNumber[x]`   |            |                                   |
-| `NumUsage[x]`         | integer    | number of times the card was used |
-| `OpenToBuy[x]`        | money      |                                   |
-| `UOpenToBuy[x]`       | float      |                                   |
-| `PAN[x]`              | integer    | card number                       |
-| `ValidFrom[x]`        | date       |                                   |
-
-### Delete Card
-
-#### Request
-
-| Name       | Value                  |
-| ---------- | ---------------------- |
-| `CPNPAN`   | previous `PAN[x]`      |
-| `CardType` | previous `CardType[x]` |
-| `VCardId`  | previous `VCardId[x]`  |
-| `Request`  | `CancelCPN`            |
