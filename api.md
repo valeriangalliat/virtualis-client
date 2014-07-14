@@ -36,22 +36,22 @@ Some custom types can be found in multiple parameters:
   </thead>
   <tbody>
     <tr>
-      <td><code>yes/no</code></td>
+      <td>yes/no</td>
       <td><code>Y</code> or <code>N</code></td>
     </tr>
     <tr>
-      <td><code>date</code></td>
+      <td>date</td>
       <td>
         <code>day/month/year</code>, 2 digits for day and month,
         4 for year
       </td>
     </tr>
     <tr>
-      <td><code>short date</code></td>
+      <td>short date</td>
       <td>2 digits for month and year</td>
     </tr>
     <tr>
-      <td><code>money</code></td>
+      <td>money</td>
       <td>
         the first character is an URL encoded money symbol (like
         <code>%80</code> for <code>€</code>), followed by a float number
