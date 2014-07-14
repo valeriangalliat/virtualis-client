@@ -286,7 +286,7 @@ See [Arrays](#arrays).
 
 ### Active Virtual Cards
 
-Get the list of active virtual cards behind real card (identified by
+Get the list of active virtual cards behind real card identified by
 `CardType` and `VCardID`.
 
 #### Request
@@ -329,18 +329,11 @@ See [Arrays](#arrays).
 | `PAN[x]`              | integer    | card number                       |
 | `ValidFrom[x]`        | date       |                                   |
 
-### Delete Card
-
-#### Request
-
-| Name       | Value                  |
-| ---------- | ---------------------- |
-| `Request`  | `CancelCPN`            |
-| `CPNPAN`   | previous `PAN[x]`      |
-| `CardType` | previous `CardType[x]` |
-| `VCardId`  | previous `VCardId[x]`  |
-
 ### Create Virtual Card
+
+Create a virtual card, with an amount ceiling (`CumulativeLimit`), and a
+number of months the card will be valid (`ValidFor`), behind a real
+card identified by `CardType` and `VCardID`.
 
 #### Request
 
@@ -409,6 +402,25 @@ See [Arrays](#arrays).
 | `ExpiryYear`  | integer    | expiry year  |
 | `From`        | short date |              |
 | `PAN`         | integer    | card number  |
+
+### Delete Virtual Card
+
+Delete a virtual card identified by `CPNPAN`, owned by a real card
+identified by `CardType` and `VCardID`.
+
+#### Request
+
+| Name       | Value                  |
+| ---------- | ---------------------- |
+| `Request`  | `CancelCPN`            |
+| `CPNPAN`   | previous `PAN[x]`      |
+| `CardType` | previous `CardType[x]` |
+| `VCardId`  | previous `VCardId[x]`  |
+
+#### Response
+
+If there is no error, the response won't contain anything else than the
+[Defaut Response Parameters](#default-response-parameters).
 
 ### Profiles List
 
