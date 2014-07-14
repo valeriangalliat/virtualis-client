@@ -19,6 +19,8 @@ import virtualis
 from docopt import docopt
 from getpass import getpass
 
+from pprint import pprint
+
 
 class VirtualisShell(cmd.Cmd):
     intro = 'Virtualis shell. Type help or ? to list commands.\n'
@@ -36,17 +38,28 @@ class VirtualisShell(cmd.Cmd):
         '''List available cards.'''
 
         if not hasattr(self, 'cards'):
-            request = virtualis.GetActiveCardsRequest()
+            request = virtualis.CardsRequest()
             self.cards = self.client.send(request).cards
 
         self.show_cards()
 
-    def do_info(self, arg):
+    def do_vc(self, arg):
+        i = int(arg)
+
+        type = self.cards[i].type
+        id = self.cards[i].id
+
+        request = virtualis.VirtualCardsRequest(type, id)
+        vc = self.client.send(request)
+
+        pprint(vc)
+
+    def do_create(self, arg):
         i = int(arg)
         type = self.cards[i].type
         id = self.cards[i].id
 
-        request = virtualis.GetCardInfoRequest(type, id)
+        request = virtualis.CreateCardRequest(type, id)
         info = self.client.send(request)
 
         print()
