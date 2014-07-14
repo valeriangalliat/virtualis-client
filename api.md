@@ -98,10 +98,6 @@ in the request and the response:
 | `Start` | integer | start offset (0 for the first item)      |
 | `Next`  | integer | number of records to fetch after `Start` |
 
-Note the pagination seems to be tied to the session. The request will fail
-if you give a non-zero `Start` for the first request. Once the first
-request is done, you can paginate as you want.
-
 ### Response
 
 | Name          | Type    | Description                       |
@@ -110,42 +106,46 @@ request is done, you can paginate as you want.
 | `Start`       | integer | same as `Start` request parameter |
 | `End`         | integer | last record of the set            |
 
+Note the pagination seems to be tied to the session. The request will fail
+if you give a non-zero `Start` for the first request. Once the first
+request is done, you can paginate as you want.
+
 ### Example
 
-Fetch the first 4 items:
+#### Fetch the first 4 items
 
-#### Request
+##### Request
 
     Start: 0
     Next: 4
 
-#### Response
+##### Response
 
     RecordCount: 16
     Start: 0
     End: 3
 
-Fetch the second page of the previous request:
+#### Fetch the second page of the previous request
 
-#### Request
+##### Request
 
     Start: 4
     Next: 4
 
-#### Response
+##### Response
 
     RecordCount: 16
     Start: 4
     End: 7
 
-Fetch the last record:
+#### Fetch the last record
 
-#### Request
+##### Request
 
     Start: 15
     Next: 1
 
-#### Response
+##### Response
 
     RecordCount: 16
     Start: 15
