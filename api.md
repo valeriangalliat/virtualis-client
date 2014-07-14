@@ -71,7 +71,7 @@ Some requests returns array-like structures. This is done with a `Total`
 response parameter, and multiple parameters ending with an integer
 representing the offset.
 
-### Example
+### Examples
 
     Total: 2
     Foo1: value
@@ -110,43 +110,31 @@ Note the pagination seems to be tied to the session. The request will fail
 if you give a non-zero `Start` for the first request. Once the first
 request is done, you can paginate as you want.
 
-### Example
+### Examples
 
-#### Fetch the first 4 items
-
-##### Request
+Fetch the first 4 items:
 
     Start: 0
     Next: 4
-
-##### Response
-
+    ---
     RecordCount: 16
     Start: 0
     End: 3
 
-#### Fetch the second page of the previous request
-
-##### Request
+Fetch the second page of the previous request:
 
     Start: 4
     Next: 4
-
-##### Response
-
+    ---
     RecordCount: 16
     Start: 4
     End: 7
 
-#### Fetch the last record
-
-##### Request
+Fetch the last record:
 
     Start: 15
     Next: 1
-
-##### Response
-
+    ---
     RecordCount: 16
     Start: 15
     End: 15
