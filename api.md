@@ -64,13 +64,14 @@ Some custom types can be found in multiple parameters:
   </tbody>
 </table>
 
-### Arrays
+Arrays
+------
 
 Some requests returns array-like structures. This is done with a `Total`
-(or `RecordCount`, I need to figure this out) response parameter, and
-multiple parameters ending with an integer representing the offset.
+response parameter, and multiple parameters ending with an integer
+representing the offset.
 
-Example:
+### Example
 
     Total: 2
     Foo1: value
@@ -83,6 +84,72 @@ replaced with a number, from 0 to `Total`:
 
     Foo[x]
     Bar[x]
+
+Pagination
+----------
+
+Some requests support pagination. This is done with additional parameters
+in the request and the response:
+
+### Request
+
+| Name    | Type    | Description                              |
+| ------- | ------- | ---------------------------------------- |
+| `Start` | integer | start offset (0 for the first item)      |
+| `Next`  | integer | number of records to fetch after `Start` |
+
+Note the pagination seems to be tied to the session. The request will fail
+if you give a non-zero `Start` for the first request. Once the first
+request is done, you can paginate as you want.
+
+### Response
+
+| Name          | Type    | Description                       |
+| ------------- | ------- | --------------------------------- |
+| `RecordCount` | integer | total number of records           |
+| `Start`       | integer | same as `Start` request parameter |
+| `End`         | integer | last record of the set            |
+
+### Example
+
+Fetch the first 4 items:
+
+#### Request
+
+    Start: 0
+    Next: 4
+
+#### Response
+
+    RecordCount: 16
+    Start: 0
+    End: 3
+
+Fetch the second page of the previous request:
+
+#### Request
+
+    Start: 4
+    Next: 4
+
+#### Response
+
+    RecordCount: 16
+    Start: 4
+    End: 7
+
+Fetch the last record:
+
+#### Request
+
+    Start: 15
+    Next: 1
+
+#### Response
+
+    RecordCount: 16
+    Start: 15
+    End: 15
 
 Common Request Parameters
 -------------------------
@@ -176,28 +243,9 @@ The client must support HTTP cookies.
 
 By sniffing the original application, you can see a `SessionId` in all
 requests and responses after the authentication, but the session will be
-destroyed if not using HTTP cookies.
-
-Pagination
-----------
-
-Some requests support pagination. This is done with additional parameters
-in the request and the response:
-
-### Request
-
-| Name    | Type    | Description                                 |
-| ------- | ------- | ------------------------------------------- |
-| `Start` | integer | start offset (0 for the first page)         |
-| `Next`  | integer | no idea... probably next page record number |
-
-### Response
-
-| Name          | Type    | Description                       |
-| ------------- | ------- | --------------------------------- |
-| `RecordCount` | integer | number of records in current set  |
-| `Start`       | integer | same as `Start` request parameter |
-| `Total`       | integer | total number of records           |
+destroyed if not using HTTP cookies. Note in some requests (but not all),
+you have to provide the `SessionId` back in the request params. I advise you
+to do it everytime since the original client does this too.
 
 Errors
 ------
@@ -233,9 +281,11 @@ Get the list of active real cards for this account.
 
 #### Response
 
+See [Arrays](#arrays).
+
 | Name                | Type           | Description |
 | ------------------- | -------------- | ----------- |
-| `Total`             | integer        |             |
+| `Total`             |                |             |
 | `AdFrequency[x]`    | integer        |             |
 | `CPN_Service[x]`    | boolean        |             |
 | `CardType[x]`       | integer        |             |
@@ -253,23 +303,28 @@ Get the list of active virtual cards behind real card (identified by
 
 #### Request
 
-| Name       | Type    | Value                  |
-| ---------- | --------| ---------------------- |
-| `Request`  |         |`GetActiveAccounts`     |
-| `Start`    | integer | `0` by default         |
-| `Next`     | integer | `20` by default        |
-| `CardType` |         | previous `CardType[x]` |
-| `VCardId`  |         | previous `VCardId[x]`  |
+See [Pagination](#pagination).
+
+| Name       | Value                  |
+| ---------- | ---------------------- |
+| `Request`  | `GetActiveAccounts`    |
+| `Start`    | `0` by default         |
+| `Next`     | `20` by default        |
+| `CardType` | previous `CardType[x]` |
+| `VCardId`  | previous `VCardId[x]`  |
 
 #### Response
 
+See [Pagination](#pagination).
+See [Arrays](#arrays).
+
 | Name                  | Type       | Description                       |
 | --------------------- | ---------- | --------------------------------- |
-| `End`                 | integer    |                                   |
-| `RecordCount`         | integer    |                                   |
-| `Start`               | integer    |                                   |
-| `Total`               | integer    |                                   |
-| `AVV1`                | integer    | secret code                       |
+| `Start`               |            |                                   |
+| `End`                 |            |                                   |
+| `RecordCount`         |            |                                   |
+| `Total`               |            |                                   |
+| `AVV[x]`              | integer    | secret code                       |
 | `AuthAmount[x]`       | money      | ceiling                           |
 | `CPNType[x]`          |            |                                   |
 | `CumulativeLimit[x]`  | money      | ceiling                           |
@@ -280,7 +335,6 @@ Get the list of active virtual cards behind real card (identified by
 | `IssueDate[x]`        | date       |                                   |
 | `MerchantId[x]`       | integer    |                                   |
 | `MerchantName[x]`     |            |                                   |
-| `MicroRefNumber[x]`   |            |                                   |
 | `NumUsage[x]`         | integer    | number of times the card was used |
 | `OpenToBuy[x]`        | money      |                                   |
 | `UOpenToBuy[x]`       | float      |                                   |
@@ -293,10 +347,10 @@ Get the list of active virtual cards behind real card (identified by
 
 | Name       | Value                  |
 | ---------- | ---------------------- |
+| `Request`  | `CancelCPN`            |
 | `CPNPAN`   | previous `PAN[x]`      |
 | `CardType` | previous `CardType[x]` |
 | `VCardId`  | previous `VCardId[x]`  |
-| `Request`  | `CancelCPN`            |
 
 ### Create Virtual Card
 
@@ -368,8 +422,6 @@ Get the list of active virtual cards behind real card (identified by
 | `From`        | short date |              |
 | `PAN`         | integer    | card number  |
 
-
-
 ### Profiles List
 
 #### Request
@@ -383,11 +435,13 @@ Get the list of active virtual cards behind real card (identified by
 
 #### Response
 
-| Name             | Type    |
-| ---------------- | ------- |
-| `Total`          | integer |
-| `ProfileName[x]` |         |
-| `ProfileType[x]` |         |
+See [Arrays](#arrays).
+
+| Name             | Type   |
+| ---------------- | ------ |
+| `Total`          |        |
+| `ProfileName[x]` | string |
+| `ProfileType[x]` | string |
 
 ### Shipping Profile
 
@@ -436,23 +490,28 @@ Get the list of active virtual cards behind real card (identified by
 
 #### Request
 
+See [Pagination](#pagination).
+
 | Name       | Type    | Value                  |
 | ---------- | --------| ---------------------- |
 | `Request`  |         | `GetPastTransactions`  |
-| `Start`    | integer | `0` by default         |
-| `Next`     | integer | `20` by default        |
+| `Start`    |         | `0` by default         |
+| `Next`     |         | `20` by default        |
 | `CardType` |         | previous `CardType[x]` |
 | `VCardId`  |         | previous `VCardId[x]`  |
 
 #### Response
 
+See [Pagination](#pagination).
+See [Arrays](#arrays).
+
 | Name                   | Type       | Description                       |
 | ---------------------- | ---------- | --------------------------------- |
-| `End`                  | integer    |                                   |
-| `RecordCount`          | integer    |                                   |
-| `Start`                | integer    |                                   |
-| `Total`                | integer    |                                   |
-| `AVV1`                 | integer    | secret code                       |
+| `Start`                |            |                                   |
+| `End`                  |            |                                   |
+| `RecordCount`          |            |                                   |
+| `Total`                |            |                                   |
+| `AVV[x]`               | integer    | secret code                       |
 | `AuthCode[x]`          |            |                                   |
 | `CPNType[x]`           |            |                                   |
 | `CumulativeLimit[x]`   | money      | ceiling                           |
