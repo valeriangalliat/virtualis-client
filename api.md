@@ -420,7 +420,7 @@ identified by `CardType` and `VCardID`.
 #### Response
 
 If there is no error, the response won't contain anything else than the
-[Defaut Response Parameters](#default-response-parameters).
+[Common Response Parameters](#common-response-parameters).
 
 ### Profiles List
 
