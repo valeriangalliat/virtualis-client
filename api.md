@@ -36,6 +36,10 @@ Some custom types can be found in multiple parameters:
   </thead>
   <tbody>
     <tr>
+      <td>string boolean</td>
+      <td>whether the string is <code>true</code> or <code>false</code></td>
+    </tr>
+    <tr>
       <td>yes/no</td>
       <td><code>Y</code> or <code>N</code></td>
     </tr>
@@ -58,9 +62,6 @@ Some custom types can be found in multiple parameters:
         with <code>.</code> as decimal separator
       </td>
     </tr>
-    <tr>
-      <td>string boolean</td>
-      <td>whether the string is <code>true</code> or <code>false</code></td>
   </tbody>
 </table>
 
@@ -97,6 +98,8 @@ in the request and the response:
 | ------- | ------- | ---------------------------------------- |
 | `Start` | integer | start offset (0 for the first item)      |
 | `Next`  | integer | number of records to fetch after `Start` |
+
+In the official application, there is 20 items per page.
 
 ### Response
 
@@ -250,10 +253,10 @@ and the error message.
 | `CM0001` | wrong credentials                                |
 | `AT0008` | session expired, the login step must be replayed |
 
-Requests
---------
+Methods
+-------
 
-### Active Cards
+### Cards
 
 Get the list of active real cards for this account.
 
@@ -284,7 +287,7 @@ See [Arrays](#arrays).
 | `PAN[x]`            | integer        | card number |
 | `VBV_Service[x]`    | string boolean |             |
 
-### Active Virtual Cards
+### Virtual Cards
 
 Get the list of active virtual cards behind real card identified by
 `CardType` and `VCardID`.
@@ -296,8 +299,8 @@ See [Pagination](#pagination).
 | Name       | Value                  |
 | ---------- | ---------------------- |
 | `Request`  | `GetActiveAccounts`    |
-| `Start`    | `0` by default         |
-| `Next`     | `20` by default        |
+| `Start`    |                        |
+| `Next`     |                        |
 | `CardType` | previous `CardType[x]` |
 | `VCardId`  | previous `VCardId[x]`  |
 
@@ -329,7 +332,7 @@ See [Arrays](#arrays).
 | `PAN[x]`              | integer    | card number                       |
 | `ValidFrom[x]`        | date       |                                   |
 
-### Create Virtual Card
+### Create Card
 
 Create a virtual card, with an amount ceiling (`CumulativeLimit`), and a
 number of months the card will be valid (`ValidFor`), behind a real
@@ -495,8 +498,8 @@ See [Pagination](#pagination).
 | Name       | Type    | Value                  |
 | ---------- | --------| ---------------------- |
 | `Request`  |         | `GetPastTransactions`  |
-| `Start`    |         | `0` by default         |
-| `Next`     |         | `20` by default        |
+| `Start`    |         |                        |
+| `Next`     |         |                        |
 | `CardType` |         | previous `CardType[x]` |
 | `VCardId`  |         | previous `VCardId[x]`  |
 
