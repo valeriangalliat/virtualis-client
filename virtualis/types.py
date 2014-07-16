@@ -25,7 +25,7 @@ yesno = choice('y', 'n')
 
 
 def split_date(value):
-    return [int(i) for i in value.split('/')]
+    return map(int, value.split('/'))
 
 
 def date(value):
@@ -37,7 +37,7 @@ def date(value):
 def short_date(value):
     '''Convert a protocol short date to `datetime.date`.'''
     month, year = split_date(value)
-    return datetime.date(year, month, 1)
+    return datetime.date(2000 + year, month, 1)
 
 
 def money(value):

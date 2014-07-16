@@ -1,5 +1,6 @@
 from .pagination import PaginationResponse, PaginationRequest
 from ..types import date, short_date
+from functools import partial
 
 
 class VirtualCard:
@@ -7,6 +8,10 @@ class VirtualCard:
 
 
 class VirtualCardsResponse(PaginationResponse):
+    def __init__(self, parent_card, dict):
+        self.parent = parent_card
+        super().__init__(dict)
+
     def parse(self, dict):
         super().parse(dict)
         self.cards = self.parse_loop(dict)
@@ -14,7 +19,8 @@ class VirtualCardsResponse(PaginationResponse):
     def parse_item(self, dict):
         card = VirtualCard()
 
-        card.avv = int(dict['AVV'])
+        card.parent = self.parent
+        card.avv = dict['AVV']
         card.limit = float(dict['UCumulativeLimit'])
         card.currency = int(dict['Currency'])
         card.expiry = short_date(dict['Expiry'])
@@ -22,27 +28,28 @@ class VirtualCardsResponse(PaginationResponse):
         card.issue_date = date(dict['IssueDate'])
         card.merchant_id = dict['MerchantId']
         card.merchant_name = dict['MerchantName']
-        card.num_usage = dict['NumUsage']
-        card.open_to_by = dict['UOpenToBuy']
+        card.num_usage = int(dict['NumUsage'])
+        card.open_to_by = float(dict['UOpenToBuy'])
         card.pan = dict['PAN']
-        card.valid_from = dict['ValidFrom']
+        card.valid_from = date(dict['ValidFrom'])
 
         return card
 
 
 class VirtualCardsRequest(PaginationRequest):
     ACTION = 'GetActiveAccounts'
-    RESPONSE = VirtualCardsResponse
 
-    def __init__(self, type, id):
+    def __init__(self, card):
         super().__init__()
-        self.type = type
-        self.id = id
+        self.card = card
+
+        # Contextual response
+        self.RESPONSE = partial(VirtualCardsResponse, self.card)
 
     def query(self):
         query = super().query()
 
-        query['CardType'] = str(self.type)
-        query['VCardId'] = str(self.id)
+        query['CardType'] = str(self.card.type)
+        query['VCardId'] = str(self.card.id)
 
         return query

@@ -22,3 +22,4 @@ class Response:
 from .cards import CardsRequest, CardsResponse
 from .virtual_cards import VirtualCardsRequest, VirtualCardsResponse
 from .create_card import CreateCardRequest, CreateCardResponse
+from .delete_card import DeleteCardRequest

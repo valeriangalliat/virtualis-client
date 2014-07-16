@@ -16,83 +16,256 @@ Options:
 import cmd
 import virtualis
 
+from abc import abstractmethod
 from docopt import docopt
 from getpass import getpass
+from itertools import chain
+from operator import methodcaller
 
-from pprint import pprint
+
+def table(rows):
+    '''Table format helper.'''
+
+    columns = len(rows[0])
+    widths = [max(map(len, (r[i] for r in rows))) for i in range(columns)]
+
+    for row in rows:
+        print('  '.join(f.ljust(widths[i]) for i, f in enumerate(row)))
+
+
+def index(f):
+    def new(self, arg):
+        return f(self, int(arg) - 1)
+
+    return new
+
+
+def args(f):
+    def new(self, arg):
+        args = arg.split(' ')
+        args = map(methodcaller('strip'), args)
+        args = filter(None, args)
+        args = list(args)
+
+        return f(self, args)
+
+    return new
+
+
+def argsdo(f):
+    @args
+    def new(self, args):
+        for arg in args:
+            f(self, arg)
+
+    return new
+
+
+class File:
+    @abstractmethod
+    def cat(self):
+        '''Print file content.'''
+
+    @abstractmethod
+    def rm(self):
+        '''Removes the file.'''
+
+
+class Directory:
+    def __init__(self, parent):
+        self.parent = parent
+
+    @abstractmethod
+    def ls(self):
+        '''List directory content.'''
+
+    @abstractmethod
+    def cd(self, arg):
+        '''Return a subdirectory for given argument.'''
+
+    @abstractmethod
+    def cf(self, arg):
+        '''Return a file from current directory for given argument.'''
+
+    @abstractmethod
+    def mknod(self, arg):
+        '''Create a node in the current direcotry.'''
+
+
+class VirtualCardFile(File):
+    def __init__(self, client, card):
+        self.client = client
+        self.card = card
+
+    def cat(self):
+        print('card info')
+
+    def rm(self):
+        request = virtualis.DeleteCardRequest(self.card)
+        self.client.send(request)
+
+
+def ipagination(client, size, request):
+    i = 1
+
+    request.paginate(i, size)
+    response = client.send(request)
+
+    yield response
+
+    done = size
+    i += 1
+
+    while done < response.count:
+        request.paginate(i, size)
+
+        yield client.send(request)
+
+        done += size
+        i += 1
+
+
+class VirtualCardsDirectory(Directory):
+    def __init__(self, parent, client, card):
+        super().__init__(parent)
+
+        self.client = client
+        self.card = card
+        self.cards = None
+
+    def ls(self):
+        request = virtualis.VirtualCardsRequest(self.card)
+
+        iterator = ipagination(self.client, 20, request)
+        self.cards = list(chain(*[r.cards for r in iterator]))
+
+        rows = [['No.', 'PAN', 'AVV', 'Expiry', 'Limit']]
+
+        for i, card in enumerate(self.cards):
+            no = str(i + 1)
+            pan = card.pan
+            avv = card.avv
+            expiry = '{0:%m}/{0:%y}'.format(card.expiry)
+            limit = str(card.limit)
+
+            rows.append([no, pan, avv, expiry, limit])
+
+        table(rows)
+
+    @index
+    def cf(self, i):
+        return VirtualCardFile(self.client, self.cards[i])
+
+    @args
+    def mknod(self, args):
+        request = virtualis.CreateCardRequest(self.card, args[0], args[1])
+        card = self.client.send(request)
+
+        print('PAN:', card.pan)
+        print('AVV:', card.avv)
+        print('Expiry:', '/'.join(map(str, card.expiry)))
+
+
+class CardFile(File):
+    def __init__(self, card):
+        self.card = card
+
+    def cat(self):
+        print('Nick:', self.card.nick)
+        print('Holder:', self.card.holder_name)
+        print('PAN:', self.card.pan)
+
+
+class CardsDirectory(Directory):
+    def __init__(self, client):
+        super().__init__(self)
+        self.client = client
+        self.cards = None
+
+    def ls(self):
+        if self.cards is None:
+            request = virtualis.CardsRequest()
+            self.cards = self.client.send(request).cards
+
+        if len(self.cards) == 0:
+            print('*** No cards for your account.')
+            return
+
+        for i, card in enumerate(self.cards):
+            print(i + 1, '', card.nick)
+
+    @index
+    def cd(self, i):
+        return VirtualCardsDirectory(self, self.client, self.cards[i])
+
+    @index
+    def cf(self, i):
+        return CardFile(self.cards[i])
 
 
 class VirtualisShell(cmd.Cmd):
     intro = 'Virtualis shell. Type help or ? to list commands.\n'
     prompt = '(virtualis) '
 
-    def __init__(self, client, completekey='tab', stdin=None, stdout=None):
-        super().__init__(completekey, stdin, stdout)
+    def __init__(self, client):
+        super().__init__()
         self.client = client
+        self.directory = CardsDirectory(self.client)
+        self.home_directory = self.directory
 
     def do_exit(self, arg):
         '''Exit the shell.'''
         return True
 
-    def do_cards(self, arg):
-        '''List available cards.'''
+    @args
+    def do_ls(self, args):
+        '''List current "directory".'''
 
-        if not hasattr(self, 'cards'):
-            request = virtualis.CardsRequest()
-            self.cards = self.client.send(request).cards
-
-        self.show_cards()
-
-    def do_vc(self, arg):
-        i = int(arg)
-
-        type = self.cards[i].type
-        id = self.cards[i].id
-
-        request = virtualis.VirtualCardsRequest(type, id)
-        vc = self.client.send(request)
-
-        pprint(vc)
-
-    def do_create(self, arg):
-        i = int(arg)
-        type = self.cards[i].type
-        id = self.cards[i].id
-
-        request = virtualis.CreateCardRequest(type, id)
-        info = self.client.send(request)
-
-        print()
-        print('AVV:', info.avv)
-        print('Expiry:', '/'.join(map(str, info.expiry)))
-        print('PAN:', info.pan)
-
-    def show_cards(self):
-        if len(self.cards) == 0:
-            print('*** No cards for your account.')
+        if len(args) == 0:
+            self.directory.ls()
             return
 
-        print()
+        if len(args) == 1:
+            self.directory.cd(args[0]).ls()
+            return
 
-        self.show_card(0, self.cards[0])
+        first = True
 
-        for i, card in enumerate(self.cards[1:]):
-            print()
-            print('---')
-            print()
+        for arg in args:
+            if first:
+                first = False
+            else:
+                print()
 
-            self.show_card(i, card)
+            print(arg + ':')
+            self.directory.cd(arg).ls()
 
-        print()
+    def do_cd(self, arg):
+        '''Go in given "directory", or home if nothing given.'''
 
-    def show_card(self, i, card):
-        print('No.:', i)
-        print('Nick:', card.nick)
-        print('Holder:', card.holder_name)
+        if arg == '':
+            self.directory = self.home_directory
+        elif arg == '.':
+            pass
+        elif arg == '..':
+            self.directory = self.directory.parent
+        else:
+            self.directory = self.directory.cd(arg)
+
+    @argsdo
+    def do_cat(self, arg):
+        self.directory.cf(arg).cat()
+
+    @argsdo
+    def do_rm(self, arg):
+        self.directory.cf(arg).rm()
+
+    def do_mknod(self, arg):
+        self.directory.mknod(arg)
 
 
 def main():
-    args = docopt(__doc__, version='Virtualis Client 0.1')
+    args = docopt(__doc__, version='Virtualis Client 1.0')
 
     user = args['<user>']
     pass_ = args['--pass']

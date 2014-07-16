@@ -21,7 +21,7 @@ class CardsResponse(ListResponse):
         card.holder_name = dict['CardholderName']
         card.default = yesno(dict['DefaultCard'])
         card.nick = dict['Nickname']
-        card.pan = int(dict['PAN'])
+        card.pan = dict['PAN']
         card.vbv_service = bool(dict['VBV_Service'])
 
         return card

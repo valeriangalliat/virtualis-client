@@ -18,7 +18,7 @@ class PaginationRequest(Request):
         self.page = 1
         self.limit = 10
 
-    def paginate(self, page, limit0):
+    def paginate(self, page, limit):
         self.page = page
         self.limit = limit
 
