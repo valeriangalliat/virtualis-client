@@ -284,7 +284,7 @@ See [Arrays](#arrays).
 | `CardholderName[x]` | string         | holder name |
 | `DefaultCard[x]`    | yes/no         |             |
 | `Nickname[x]`       | string         | card name   |
-| `PAN[x]`            | integer        | card number |
+| `PAN[x]`            | string         | card number |
 | `VBV_Service[x]`    | string boolean |             |
 
 ### Virtual Cards
@@ -315,7 +315,7 @@ See [Arrays](#arrays).
 | `End`                 |            |                                   |
 | `RecordCount`         |            |                                   |
 | `Total`               |            |                                   |
-| `AVV[x]`              | integer    | secret code                       |
+| `AVV[x]`              | string     | secret code                       |
 | `AuthAmount[x]`       | money      | ceiling                           |
 | `CPNType[x]`          |            |                                   |
 | `CumulativeLimit[x]`  | money      | ceiling                           |
@@ -324,12 +324,12 @@ See [Arrays](#arrays).
 | `Expiry[x]`           | short date | expiry date                       |
 | `StartDate[x]`        | short date | creation date                     |
 | `IssueDate[x]`        | date       |                                   |
-| `MerchantId[x]`       | integer    |                                   |
+| `MerchantId[x]`       | string     |                                   |
 | `MerchantName[x]`     |            |                                   |
 | `NumUsage[x]`         | integer    | number of times the card was used |
 | `OpenToBuy[x]`        | money      |                                   |
 | `UOpenToBuy[x]`       | float      |                                   |
-| `PAN[x]`              | integer    | card number                       |
+| `PAN[x]`              | string     | card number                       |
 | `ValidFrom[x]`        | date       |                                   |
 
 ### Create Card
@@ -399,12 +399,12 @@ card identified by `CardType` and `VCardID`.
 
 | Name          | Type       | Description  |
 | ------------- | ---------- | ------------ |
-| `AVV`         | integer    | secret code  |
+| `AVV`         | string     | secret code  |
 | `Expiry`      | short date | expiry date  |
 | `ExpiryMonth` | integer    | expiry month |
 | `ExpiryYear`  | integer    | expiry year  |
 | `From`        | short date |              |
-| `PAN`         | integer    | card number  |
+| `PAN`         | string     | card number  |
 
 ### Delete Card
 
@@ -514,7 +514,7 @@ See [Arrays](#arrays).
 | `End`                  |            |                                   |
 | `RecordCount`          |            |                                   |
 | `Total`                |            |                                   |
-| `AVV[x]`               | integer    | secret code                       |
+| `AVV[x]`               | string     | secret code                       |
 | `AuthCode[x]`          |            |                                   |
 | `CPNType[x]`           |            |                                   |
 | `CumulativeLimit[x]`   | money      | ceiling                           |
@@ -527,7 +527,7 @@ See [Arrays](#arrays).
 | `MicroRefNumber[x]`    |            |                                   |
 | `NumUsage[x]`          | integer    | number of times the card was used |
 | `OriginalAmount[x]`    | money      | same as `CumulativeLimit[x]`      |
-| `PAN[x]`               | integer    | card number                       |
+| `PAN[x]`               | string     | card number                       |
 | `Status[x]`            |            |                                   |
 | `TransactionAmount[x]` | money      | transaction amount                |
 | `TransactionDate[x]`   | money      | transaction date                  |
