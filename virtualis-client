@@ -49,16 +49,19 @@ def args(f):
 
         return f(self, args)
 
+    new.__doc__ = f.__doc__
+
     return new
 
 
 def argsdo(f):
-    @args
     def new(self, args):
         for arg in args:
             f(self, arg)
 
-    return new
+    new.__doc__ = f.__doc__
+
+    return args(new)
 
 
 class File:
@@ -254,13 +257,16 @@ class VirtualisShell(cmd.Cmd):
 
     @argsdo
     def do_cat(self, arg):
+        '''View a card detailed informations.'''
         self.directory.cf(arg).cat()
 
     @argsdo
     def do_rm(self, arg):
+        '''Permanently remove a virtual card.'''
         self.directory.cf(arg).rm()
 
     def do_mknod(self, arg):
+        '''Create a new virtual card with "mknod limit valid-for".'''
         self.directory.mknod(arg)
 
 
