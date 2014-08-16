@@ -40,9 +40,11 @@ def short_date(value):
     return datetime.date(2000 + year, month, 1)
 
 
-def money(value):
-    '''Parse a money protocol value.
+class Money:
+    def __init__(self, value):
+        '''Parse a money protocol value. '''
+        self.currency = value[0]
+        self.amount = float(value[1:])
 
-    This will return a tuple with a float and a currency string.
-    '''
-    return float(value[1:]), value[0]
+    def __str__(self):
+        return self.currency + str(self.amount)

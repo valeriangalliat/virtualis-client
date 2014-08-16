@@ -1,5 +1,5 @@
 from .pagination import PaginationResponse, PaginationRequest
-from ..types import date, short_date
+from ..types import date, short_date, Money
 from functools import partial
 
 
@@ -21,7 +21,7 @@ class VirtualCardsResponse(PaginationResponse):
 
         card.parent = self.parent
         card.avv = dict['AVV']
-        card.limit = float(dict['UCumulativeLimit'])
+        card.limit = Money(dict['CumulativeLimit'])
         card.currency = int(dict['Currency'])
         card.expiry = short_date(dict['Expiry'])
         card.start_date = short_date(dict['StartDate'])
@@ -29,7 +29,7 @@ class VirtualCardsResponse(PaginationResponse):
         card.merchant_id = dict['MerchantId']
         card.merchant_name = dict['MerchantName']
         card.num_usage = int(dict['NumUsage'])
-        card.open_to_by = float(dict['UOpenToBuy'])
+        card.open_to_by = Money(dict['OpenToBuy'])
         card.pan = dict['PAN']
         card.valid_from = date(dict['ValidFrom'])
 
