@@ -20,7 +20,7 @@ class Client:
     HOST = 'www.service-virtualis.com'
     PATH = '/cvd/WebServlet'
     URL = SCHEME + '://' + HOST + PATH
-    ENCODING = 'latin_1'
+    ENCODING = 'cp1252'
     VERSION = '3.0'
 
     def __init__(self, user, pass_, cafile=None, capath=None, ie=False,
@@ -87,7 +87,7 @@ class Client:
         if res[-1] == '&':
             res = res[0:-1]
 
-        res = urllib.parse.parse_qs(res, True, True)
+        res = urllib.parse.parse_qs(res, True, True, self.ENCODING)
         res = {k: v[0] for k, v in res.items()}
 
         return res
