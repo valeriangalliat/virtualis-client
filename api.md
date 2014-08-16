@@ -1,6 +1,24 @@
 Virtualis API
 =============
 
+* [Format](#format)
+* [Types](#types)
+* [Arrays](#arrays)
+* [Pagination](#pagination)
+* [Common request parameters](#common-request-parameters)
+* [Common response parameters](#common-response-parameters)
+* [Authentication](#authentication)
+* [Session](#session)
+* [Errors](#errors)
+* [Methods](#methods)
+  * [Cards](#cards)
+  * [Virtual cards](#virtual-cards)
+  * [Create card](#create-card)
+  * [Delete card](#delete-card)
+  * [Profiles list](#profiles-list)
+  * [Shipping profile](#shipping-profile)
+  * [Buyings](#buyings)
+
 Format
 ------
 
@@ -142,7 +160,7 @@ Fetch the last record:
     Start: 15
     End: 15
 
-Common Request Parameters
+Common request parameters
 -------------------------
 
 <table>
@@ -204,7 +222,7 @@ Common Request Parameters
   </tbody>
 </table>
 
-Common Response Parameters
+Common response parameters
 --------------------------
 
 | Name     | Type           | Description                           |
@@ -245,7 +263,7 @@ When an error occurs, the `Action` parameter is set to `Error`, and you get
 `Code` and `ErrMsg` parameters, representing respectively the error code
 and the error message.
 
-### Known Codes
+### Known codes
 
 | Code     | Description                                      |
 | -------- | ------------------------------------------------ |
@@ -287,7 +305,7 @@ See [Arrays](#arrays).
 | `PAN[x]`            | string         | card number |
 | `VBV_Service[x]`    | string boolean |             |
 
-### Virtual Cards
+### Virtual cards
 
 Get the list of active virtual cards behind real card identified by
 `CardType` and `VCardID`.
@@ -332,7 +350,7 @@ See [Arrays](#arrays).
 | `PAN[x]`              | string     | card number                       |
 | `ValidFrom[x]`        | date       |                                   |
 
-### Create Card
+### Create card
 
 Create a virtual card, with an amount ceiling (`CumulativeLimit`), and a
 number of months the card will be valid (`ValidFor`), behind a real
@@ -406,7 +424,7 @@ card identified by `CardType` and `VCardID`.
 | `From`        | short date |              |
 | `PAN`         | string     | card number  |
 
-### Delete Card
+### Delete card
 
 Delete a virtual card identified by `CPNPAN`, owned by a real card
 identified by `CardType` and `VCardID`.
@@ -423,9 +441,9 @@ identified by `CardType` and `VCardID`.
 #### Response
 
 If there is no error, the response won't contain anything else than the
-[Common Response Parameters](#common-response-parameters).
+[Common response parameters](#common-response-parameters).
 
-### Profiles List
+### Profiles list
 
 #### Request
 
@@ -446,7 +464,7 @@ See [Arrays](#arrays).
 | `ProfileName[x]` | string |
 | `ProfileType[x]` | string |
 
-### Shipping Profile
+### Shipping profile
 
 #### Request
 
