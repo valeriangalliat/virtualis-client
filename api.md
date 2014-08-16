@@ -25,17 +25,21 @@ Format
 All the API calls are made on <https://service-virtualis.com/cvd/WebServlet>
 using the `POST` HTTP method.
 
-All requests are made with `application/x-www-form-urlencoded` content type.
+All requests are made with `application/x-www-form-urlencoded` content
+type.
 
-The request data must be encoded in ISO 8859-1, and the returned data
+The request data must be encoded in Windows-1252, and the returned data
 is in the same encoding.
 
-Do not trust the `Content-Type` response header at all. They always set it to
-`text/html; charset=UTF-8` even if they're actually sending
-`application/x-www-form-urlencoded; charset=ISO-8859-1`.
+Do not trust the `Content-Type` response header at all. They always set
+it to `text/html; charset=utf-8` even if they're actually sending
+`application/x-www-form-urlencoded; charset=windows-1252`.
 
-All urlencoded responses can contain a trailing `&`, or multiple `&` (empty
-parameters). In a strict parsing, you should remove them first.
+Be sure to treat URL encoded strings as Windows-1252 too, for example
+the `%80` escape sequence will lead to the `€` symbol.
+
+All URL encoded responses can contain a trailing `&`, or multiple `&`
+(empty parameters). In a strict parsing, you should remove them first.
 
 The responses won't contain any array parameter (like `foo[]=bar`), and
 you can safely assume each parameter is unique.
@@ -107,8 +111,8 @@ replaced with a number, from 0 to `Total`:
 Pagination
 ----------
 
-Some requests support pagination. This is done with additional parameters
-in the request and the response:
+Some requests support pagination. This is done with additional
+parameters in the request and the response:
 
 ### Request
 
@@ -127,9 +131,9 @@ In the official application, there is 20 items per page.
 | `Start`       | integer | same as `Start` request parameter |
 | `End`         | integer | last record of the set            |
 
-Note the pagination seems to be tied to the session. The request will fail
-if you give a non-zero `Start` for the first request. Once the first
-request is done, you can paginate as you want.
+Note the pagination seems to be tied to the session. The request will
+fail if you give a non-zero `Start` for the first request. Once the
+first request is done, you can paginate as you want.
 
 ### Examples
 
@@ -252,16 +256,16 @@ The client must support HTTP cookies.
 
 By sniffing the original application, you can see a `SessionId` in all
 requests and responses after the authentication, but the session will be
-destroyed if not using HTTP cookies. Note in some requests (but not all),
-you have to provide the `SessionId` back in the request params. I advise you
-to do it everytime since the original client does this too.
+destroyed if not using HTTP cookies. Note in some requests (but not
+all), you have to provide the `SessionId` back in the request params. I
+advise you to do it everytime since the original client does this too.
 
 Errors
 ------
 
-When an error occurs, the `Action` parameter is set to `Error`, and you get
-`Code` and `ErrMsg` parameters, representing respectively the error code
-and the error message.
+When an error occurs, the `Action` parameter is set to `Error`, and you
+get `Code` and `ErrMsg` parameters, representing respectively the error
+code and the error message.
 
 ### Known codes
 
@@ -484,7 +488,7 @@ See [Arrays](#arrays).
 | `PAN[x]`               | string     | card number                       |
 | `Status[x]`            |            |                                   |
 | `TransactionAmount[x]` | money      | transaction amount                |
-| `TransactionDate[x]`   | money      | transaction date                  |
+| `TransactionDate[x]`   | date       | transaction date                  |
 | `TransactionLimit[x]`  | money      | transaction limit                 |
 | `UTransactionLimit[x]` | float      | transaction limit                 |
 | `ValidFrom[x]`         | date       |                                   |
