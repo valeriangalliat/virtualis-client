@@ -222,6 +222,9 @@ class TransactionsDirectory(Directory):
 
         table(rows)
 
+        print('*** There may be older transactions, but the pagination '
+              'is not currently supported.')
+
     @index
     def cf(self, i):
         return TransactionFile(self.transactions[i])
