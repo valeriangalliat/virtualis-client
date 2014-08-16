@@ -23,6 +23,10 @@ from itertools import chain
 from operator import methodcaller
 
 
+SHORT_DATE_FORMAT = '{0:%m}/{0:%y}'
+DATE_FORMAT = '{0:%d}/{0:%m}/{0:%y}'
+
+
 def table(rows):
     '''Table format helper.'''
 
@@ -101,7 +105,8 @@ class VirtualCardFile(File):
         self.card = card
 
     def cat(self):
-        print('card info')
+        # TODO: maybe filter transactions of this card only
+        pass
 
     def rm(self):
         request = virtualis.DeleteCardRequest(self.card)
@@ -137,10 +142,10 @@ class VirtualCardsDirectory(Directory):
         self.cards = None
 
     def ls(self):
-        request = virtualis.VirtualCardsRequest(self.card)
-
-        iterator = ipagination(self.client, 20, request)
-        self.cards = list(chain(*[r.cards for r in iterator]))
+        if self.cards is None:
+            request = virtualis.VirtualCardsRequest(self.card)
+            iterator = ipagination(self.client, 20, request)
+            self.cards = list(chain(*[r.cards for r in iterator]))
 
         rows = [['No.', 'PAN', 'AVV', 'Expiry', 'Limit']]
 
@@ -167,6 +172,79 @@ class VirtualCardsDirectory(Directory):
         print('PAN:', card.pan)
         print('AVV:', card.avv)
         print('Expiry:', '/'.join(map(str, card.expiry)))
+
+
+class TransactionFile(File):
+    def __init__(self, transaction):
+        self.transaction = transaction
+
+    def cat(self):
+        print('AVV', self.transaction.avv)
+        print('Auth code:', self.transaction.auth_code)
+        print('Cumulative limit:', str(self.transaction.cumulative_limit))
+        print('Expiry:', SHORT_DATE_FORMAT.format(self.transaction.expiry))
+        print('Issue date::', DATE_FORMAT.format(self.transaction.issue_date))
+        print('Merchant city:', self.transaction.merchant_city)
+        print('Merchant country:', self.transaction.merchant_country)
+        print('Merchant name:', self.transaction.merchant_name)
+        print('Micro ref. number:', self.transaction.micro_ref_number)
+        print('Usage number:', str(self.transaction.num_usage))
+        print('PAN:', self.transaction.pan)
+        print('Amount:', str(self.transaction.amount))
+        print('Date:', DATE_FORMAT.format(self.transaction.date))
+        print('Limit:', str(self.transaction.limit))
+        print('Valid from:', DATE_FORMAT.format(self.transaction.valid_from))
+        print('Valid to:', DATE_FORMAT.format(self.transaction.valid_to))
+
+
+class TransactionsDirectory(Directory):
+    def __init__(self, parent, client, card):
+        super().__init__(parent)
+
+        self.client = client
+        self.card = card
+        self.transactions = None
+
+    def ls(self):
+        if self.transactions is None:
+            request = virtualis.TransactionsRequest(self.card)
+            self.transactions = self.client.send(request).transactions
+
+        rows = [['No.', 'Merchant', 'Amount', 'Date']]
+
+        for i, transaction in enumerate(self.transactions):
+            no = str(i + 1)
+            merchant = transaction.merchant_name
+            amount = str(transaction.amount)
+            date = DATE_FORMAT.format(transaction.date)
+
+            rows.append([no, merchant, amount, date])
+
+        table(rows)
+
+    @index
+    def cf(self, i):
+        return TransactionFile(self.transactions[i])
+
+
+class CardDirectory(Directory):
+    def __init__(self, parent, client, card):
+        super().__init__(parent)
+        self.client = client
+        self.card = card
+
+    def ls(self):
+        print('cards')
+        print('transactions')
+
+    def cd(self, arg):
+        if 'cards'.startswith(arg):
+            return VirtualCardsDirectory(self, self.client, self.card)
+        elif 'transactions'.startswith(arg):
+            return TransactionsDirectory(self, self.client, self.card)
+        else:
+            print('*** Unknown directory.')
+            return self
 
 
 class CardFile(File):
@@ -199,7 +277,7 @@ class CardsDirectory(Directory):
 
     @index
     def cd(self, i):
-        return VirtualCardsDirectory(self, self.client, self.cards[i])
+        return CardDirectory(self, self.client, self.cards[i])
 
     @index
     def cf(self, i):
