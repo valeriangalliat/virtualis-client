@@ -15,9 +15,9 @@ Virtualis API
   * [Virtual cards](#virtual-cards)
   * [Create card](#create-card)
   * [Delete card](#delete-card)
+  * [Transactions](#transactions)
   * [Profiles list](#profiles-list)
   * [Shipping profile](#shipping-profile)
-  * [Buyings](#buyings)
 
 Format
 ------
@@ -443,6 +443,53 @@ identified by `CardType` and `VCardID`.
 If there is no error, the response won't contain anything else than the
 [Common response parameters](#common-response-parameters).
 
+### Transactions
+
+#### Request
+
+See [Pagination](#pagination).
+
+| Name       | Type    | Value                  |
+| ---------- | --------| ---------------------- |
+| `Request`  |         | `GetPastTransactions`  |
+| `Start`    |         |                        |
+| `Next`     |         |                        |
+| `CardType` |         | previous `CardType[x]` |
+| `VCardId`  |         | previous `VCardId[x]`  |
+
+#### Response
+
+See [Pagination](#pagination).
+See [Arrays](#arrays).
+
+| Name                   | Type       | Description                       |
+| ---------------------- | ---------- | --------------------------------- |
+| `Start`                |            |                                   |
+| `End`                  |            |                                   |
+| `RecordCount`          |            |                                   |
+| `Total`                |            |                                   |
+| `AVV[x]`               | string     | secret code                       |
+| `AuthCode[x]`          |            |                                   |
+| `CPNType[x]`           |            |                                   |
+| `CumulativeLimit[x]`   | money      | ceiling                           |
+| `Currency[x]`          | integer    |                                   |
+| `ExpiryDate[x]`        | short date | expiry date                       |
+| `IssueDate[x]`         | date       |                                   |
+| `MerchantCity[x]`      |            |                                   |
+| `MerchantCountry[x]`   |            |                                   |
+| `MerchantName[x]`      |            |                                   |
+| `MicroRefNumber[x]`    |            |                                   |
+| `NumUsage[x]`          | integer    | number of times the card was used |
+| `OriginalAmount[x]`    | money      | same as `CumulativeLimit[x]`      |
+| `PAN[x]`               | string     | card number                       |
+| `Status[x]`            |            |                                   |
+| `TransactionAmount[x]` | money      | transaction amount                |
+| `TransactionDate[x]`   | money      | transaction date                  |
+| `TransactionLimit[x]`  | money      | transaction limit                 |
+| `UTransactionLimit[x]` | float      | transaction limit                 |
+| `ValidFrom[x]`         | date       |                                   |
+| `ValidTo[x]`           | date       |                                   |
+
 ### Profiles list
 
 #### Request
@@ -506,50 +553,3 @@ See [Arrays](#arrays).
 | `StateProvince`    |
 | `Status`           |
 | `SuffixName`       |
-
-### Buyings
-
-#### Request
-
-See [Pagination](#pagination).
-
-| Name       | Type    | Value                  |
-| ---------- | --------| ---------------------- |
-| `Request`  |         | `GetPastTransactions`  |
-| `Start`    |         |                        |
-| `Next`     |         |                        |
-| `CardType` |         | previous `CardType[x]` |
-| `VCardId`  |         | previous `VCardId[x]`  |
-
-#### Response
-
-See [Pagination](#pagination).
-See [Arrays](#arrays).
-
-| Name                   | Type       | Description                       |
-| ---------------------- | ---------- | --------------------------------- |
-| `Start`                |            |                                   |
-| `End`                  |            |                                   |
-| `RecordCount`          |            |                                   |
-| `Total`                |            |                                   |
-| `AVV[x]`               | string     | secret code                       |
-| `AuthCode[x]`          |            |                                   |
-| `CPNType[x]`           |            |                                   |
-| `CumulativeLimit[x]`   | money      | ceiling                           |
-| `Currency[x]`          | integer    |                                   |
-| `ExpiryDate[x]`        | short date | expiry date                       |
-| `IssueDate[x]`         | date       |                                   |
-| `MerchantCity[x]`      |            |                                   |
-| `MerchantCountry[x]`   |            |                                   |
-| `MerchantName[x]`      |            |                                   |
-| `MicroRefNumber[x]`    |            |                                   |
-| `NumUsage[x]`          | integer    | number of times the card was used |
-| `OriginalAmount[x]`    | money      | same as `CumulativeLimit[x]`      |
-| `PAN[x]`               | string     | card number                       |
-| `Status[x]`            |            |                                   |
-| `TransactionAmount[x]` | money      | transaction amount                |
-| `TransactionDate[x]`   | money      | transaction date                  |
-| `TransactionLimit[x]`  | money      | transaction limit                 |
-| `UTransactionLimit[x]` | float      | transaction limit                 |
-| `ValidFrom[x]`         | date       |                                   |
-| `ValidTo[x]`           | date       |                                   |
