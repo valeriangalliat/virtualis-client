@@ -5,8 +5,8 @@ Virtualis client
 
 [Virtualis]: http://www.service-virtualis.com/
 
-Description
------------
+Overview
+--------
 
 The Virtualis service is the only way provided by my bank to manage
 virtual credit cards, with amount limit and custom expiration date.
@@ -19,6 +19,12 @@ because their licenses are not acceptable to me*.
 That's why I reverse engineered their Flash client, to understand how
 works their protocol, [document it](api.md), build a [Python
 library](virtualis) and a [command-line client](virtualis-client).
+
+Dependencies
+------------
+
+* `python3`
+  * `docopt` <https://pypi.python.org/pypi/docopt>
 
 Library
 -------
