@@ -1,7 +1,7 @@
 Virtualis client
 ================
 
-A console client for [Virtualis] API.
+> A console client for [Virtualis] API.
 
 [Virtualis]: http://www.service-virtualis.com/
 
