@@ -37,7 +37,7 @@ class Client:
 
         context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         context.verify_mode = ssl.CERT_REQUIRED
-        context.load_verify_locations(self.cafile)
+        context.load_verify_locations(self.cafile, self.capath)
 
         self.opener = urllib.request.build_opener(
             urllib.request.HTTPCookieProcessor(),
