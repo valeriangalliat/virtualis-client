@@ -4,10 +4,12 @@
 
 Usage: virtualis-client [options] <user>
 
+Arguments:
+  <user>  User ID.
+
 Options:
   -h, --help         Show this screen.
   --version          Show version.
-  -u, --user=<user>  User ID.
   -p, --pass=<pass>  User password (prompt if not provided).
   --cafile=<cafile>  Certificate file to use.
   --capath=<capath>  Certificates directory [default: /etc/ssl/certs].
