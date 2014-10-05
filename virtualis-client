@@ -8,7 +8,7 @@ Arguments:
   <user>  User ID.
 
 Options:
-  -h, --help         Show this screen.
+  -h, --help         Show this help.
   --version          Show version.
   -p, --pass=<pass>  User password (prompt if not provided).
   --cafile=<cafile>  Certificate file to use.
