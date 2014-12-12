@@ -5,8 +5,8 @@ Virtualis client
 
 [Virtualis]: http://www.service-virtualis.com/
 
-Overview
---------
+Description
+-----------
 
 Virtualis is a service developed by the *Crédit Mutuel*, to allow bank
 clients to create virtual credit cards with amount limit and custom
