@@ -5,6 +5,10 @@ Virtualis client
 
 [Virtualis]: http://www.service-virtualis.com/
 
+**Warning**: the remote API is discontinued, thus this software is not
+working anymore. An official portable web interface is now published
+for this service and should be used instead.
+
 Description
 -----------
 
